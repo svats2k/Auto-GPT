@@ -33,7 +33,7 @@ def test_command_creation():
     assert cmd.description == "Example command"
     assert cmd.method == example_command_method
     assert (
-        str(cmd) == "example: Example command, params: (arg1: int, arg2: Optional[str])"
+        str(cmd) == "example: Example command. Params: (arg1: int, arg2: Optional[str])"
     )
 
 
@@ -172,28 +172,12 @@ def test_call_nonexistent_command():
         registry.call("nonexistent_command", arg1=1, arg2="test")
 
 
-def test_get_command_prompt():
-    """Test that the command prompt is correctly formatted."""
-    registry = CommandRegistry()
-    cmd = Command(
-        name="example",
-        description="Example command",
-        method=example_command_method,
-        parameters=PARAMETERS,
-    )
-
-    registry.register(cmd)
-    command_prompt = registry.command_prompt()
-
-    assert f"(arg1: int, arg2: Optional[str])" in command_prompt
-
-
 def test_import_mock_commands_module():
     """Test that the registry can import a module with mock command plugins."""
     registry = CommandRegistry()
     mock_commands_module = "tests.mocks.mock_commands"
 
-    registry.import_commands(mock_commands_module)
+    registry.import_command_module(mock_commands_module)
 
     assert "function_based" in registry
     assert registry.commands["function_based"].name == "function_based"
@@ -219,7 +203,7 @@ def test_import_temp_command_file_module(tmp_path: Path):
     sys.path.append(str(tmp_path))
 
     temp_commands_module = "mock_commands"
-    registry.import_commands(temp_commands_module)
+    registry.import_command_module(temp_commands_module)
 
     # Remove the temp directory from sys.path
     sys.path.remove(str(tmp_path))
